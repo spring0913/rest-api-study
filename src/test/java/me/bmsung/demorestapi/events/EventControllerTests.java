@@ -106,7 +106,7 @@ public class EventControllerTests {
                 .description("Study REST API with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2021, 6, 21, 18, 00))
                 .closeEnrollmentDateTime(LocalDateTime.of(2021, 6, 25, 18, 00))
-                .beginEventDateTime(LocalDateTime.of(2021, 6, 21, 18, 00))
+                .beginEventDateTime(LocalDateTime.of(2021, 6, 23, 18, 00))
                 .endEventDateTime(LocalDateTime.of(2021, 6, 25, 18, 00))
                 .basePrice(10000)
                 .maxPrice(200)
@@ -117,6 +117,10 @@ public class EventControllerTests {
         this.mockMvc.perform(post("/api/events")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.objectMapper.writeValueAsString(eventDto)))
-                .andExpect(status().isBadRequest());
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$[0].field").exists())
+                .andExpect(jsonPath("$[0].defaultMessage").exists())
+                .andExpect(jsonPath("$[0].code").exists());
     }
 }
