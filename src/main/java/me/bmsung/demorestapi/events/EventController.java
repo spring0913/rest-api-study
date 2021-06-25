@@ -1,5 +1,6 @@
 package me.bmsung.demorestapi.events;
 
+import me.bmsung.demorestapi.common.ErrorsResource;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -33,12 +34,12 @@ public class EventController {
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors){
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         eventValidator.validate(eventDto, errors);
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
@@ -47,5 +48,9 @@ public class EventController {
         WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
         URI createdUri = selfLinkBuilder.toUri();
         return ResponseEntity.created(createdUri).body(new EventResource(event));
+    }
+
+    private ResponseEntity badRequest(Errors errors){
+        return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
 }
